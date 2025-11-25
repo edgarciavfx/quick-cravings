@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>quick-cravings</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- Header -->
+  <header class="py-3 bg-white border-bottom">
+    <div class="container">
+      <h1 class="h4 m-0">quick-cravings</h1>
+    </div>
+  </header>
+
+
+  <!-- Main -->
+  <main class="container py-4">
+
+    <div class="row g-4">
+
+      <!-- Sidebar -->
+      <aside class="col-12 col-md-4 col-lg-3">
+
+        <!-- Search Form -->
+        <section class="mb-4">
+          <form id="search-form" class="p-3 bg-white border rounded">
+            <input type="text" class="form-control mb-3" placeholder="Search ingredient..." required>
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+          </form>
+        </section>
+
+        <!-- Favorites -->
+        <section id="favorites-section" class="p-3 bg-white border rounded">
+          <h2 class="h6 mb-3">Favorite Meals</h2>
+
+          <ul class="list-group">
+            <button class="btn btn-secondary">fav01</button>
+            <button class="btn btn-secondary">fav02</button>
+          </ul>
+        </section>
+
+      </aside>
+
+
+      <!-- Results -->
+      <section id="results-section" class="col-12 col-md-8 col-lg-9">
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+          <!-- CARD COMPONENT -->
+          <article class="col">
+            <div class="card h-100">
+              <img src="https://www.themealdb.com/images/media/meals/4i5cnx1587672171.jpg" class="card-img-top" alt="strMeal">
+              <div class="card-body">
+                <h3 class="card-title fs-6">Krispy Kreme Donut</h3>
+                <p>Dissolve yeast in warm water in 2 1/2-quart bowl. Add milk, sugar, salt, eggs, shortening and 2 cups flour. Beat on low for 30 seconds, scraping bowl constantly. Beat on medium speed for 2 minutes, scraping bowl occasionally. Stir in remaining flour until smooth. Cover and let rise until double, 50-60 minutes. (Dough is ready when indentation remains when touched.) Turn dough onto floured surface; roll around lightly to coat with flour. Gently roll dough 1/2-inch thick with floured rolling pin. Cut with floured doughnut cutter. Cover and let rise until double, 30-40 minutes.\r\nHeat vegetable oil in deep fryer to 350°. Slide doughnuts into hot oil with wide spatula. Turn doughnuts as they rise to the surface. Fry until golden brown, about 1 minute on each side. Remove carefully from oil (do not prick surface); drain. Dip the doughnuts into creamy glaze set on rack.\r\n\r\n\r\nGlaze: \r\nHeat butter until melted. Remove from heat. Stir in powdered sugar and vanilla until smooth. Stir in water, 1 tablespoon at a time, until desired consistency.</p>
+                <button 
+                  class="btn btn-outline-primary mt-2 w-100"
+                  data-bs-toggle="modal"
+                  data-bs-target="#detailsModal"
+                  data-id="1"
+                >
+                  Open
+                </button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+
+  <!-- Footer -->
+  <footer class="py-3 bg-white border-top text-center">
+    <span class="small" id="social-handle">&#64;edgarciavfx</span>
+  </footer>
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Meal Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- MealDetails Component -->
+          <p class="placeholder-glow">
+            Loading details...
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
