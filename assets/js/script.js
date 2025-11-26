@@ -5,6 +5,67 @@ const searchInput = document.querySelector('#search-input');
 const recipesContainer = document.querySelector('#recipes-container');
 const detailsModalTitle = document.querySelector('#meal-details-title');
 const detailsModalBody = document.querySelector('#meal-details-body');
+const favoritesSection = document.querySelector('#favorites-section'); // New DOM element for the sidebar
+
+// --- Favorites Management ---
+
+// Load favorites from local storage
+const loadFavorites = () => {
+    try {
+        const favorites = JSON.parse(localStorage.getItem('favorite-meals')) || [];
+        return favorites;
+    } catch (e) {
+        console.error("Could not parse favorites from localStorage", e);
+        return [];
+    }
+}
+
+// Save favorites to local storage
+const saveFavorites = (favorites) => {
+    localStorage.setItem('favorite-meals', JSON.stringify(favorites));
+    renderFavoritesSidebar(); // Update the sidebar whenever favorites change
+}
+
+// Toggle (add/remove) a meal from favorites
+const toggleFavorite = (mealName) => {
+    const favorites = loadFavorites();
+    const index = favorites.indexOf(mealName);
+
+    if (index === -1) {
+        // Add to favorites
+        favorites.push(mealName);
+    } else {
+        // Remove from favorites
+        favorites.splice(index, 1);
+    }
+
+    saveFavorites(favorites);
+    console.log(`${mealName} toggled. Current favorites: ${favorites}`);
+}
+
+// Render the favorites buttons in the sidebar
+const renderFavoritesSidebar = () => {
+    const favorites = loadFavorites();
+    const listGroup = favoritesSection.querySelector('.d-grid.gap-2'); 
+    
+    // Clear previous list (assuming we are rebuilding the list)
+    if (!listGroup) return; // safety check
+    listGroup.innerHTML = ''; 
+
+    if (favorites.length === 0) {
+        listGroup.innerHTML = '<p class="text-muted small mb-0">No favorites yet. Double-click an image to save it!</p>';
+        return;
+    }
+
+    favorites.forEach(mealName => {
+        // Use the meal name as the text for the button
+        const button = `<button class="btn btn-outline-secondary btn-sm text-start favorite-meal-btn" data-meal-name="${mealName}">${mealName}</button>`;
+        listGroup.innerHTML += button;
+    });
+}
+
+// Initialize sidebar on load
+document.addEventListener('DOMContentLoaded', renderFavoritesSidebar);
 
 // --- API Functions ---
 
@@ -39,7 +100,7 @@ const fetchMealDetails = async (mealID) => {
 
 // Display meal cards on the main page
 const displayRecipes = recipes => {
-    recipesContainer.innerHTML = ''; // Clear previous results
+    recipesContainer.innerHTML = ''; 
     
     if (!recipes || recipes.length === 0) {
         recipesContainer.innerHTML = '<p class="text-center text-muted">No recipes found. Try another ingredient!</p>';
@@ -47,9 +108,11 @@ const displayRecipes = recipes => {
     }
 
     recipes.forEach(recipe => {
+        // Add data-meal-name to the image for the dblclick event
         const recipeCard = `
             <div class="card recipe-card h-100 border-0 shadow-sm">
-              <img src="${recipe.strMealThumb}" class="card-img-top" alt="${recipe.strMeal}">
+              <img src="${recipe.strMealThumb}" class="card-img-top dbl-click-favorite" 
+                   alt="${recipe.strMeal}" data-meal-name="${recipe.strMeal}">
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title">${recipe.strMeal}</h5>
                 <button 
@@ -88,16 +151,18 @@ const displayMealDetails = (meal) => {
         }
     }
 
+    // Add dbl-click-favorite class and data-meal-name to the modal image
     const modalContent = `
         <div class="row">
             <div class="col-md-5 mb-3 mb-md-0">
-                <img src="${meal.strMealThumb}" class="img-fluid rounded shadow-sm mb-3" alt="${meal.strMeal}">
+                <img src="${meal.strMealThumb}" class="img-fluid rounded shadow-sm mb-3 dbl-click-favorite" 
+                     alt="${meal.strMeal}" data-meal-name="${meal.strMeal}">
                 
                 <h4 class="mb-3">Ingredients</h4>
                 <ul class="list-group mb-4">${ingredientsList}</ul>
 
                 ${meal.strYoutube ? `<a href="${meal.strYoutube}" target="_blank" class="btn btn-danger btn-sm">Watch Video Instructions (YouTube)</a>` : ''}
-                </div>
+            </div>
             <div class="col-md-7">
                 <h4 class="mb-3">Instructions</h4>
                 <p>${meal.strInstructions.replace(/\r\n/g, '<br>')}</p>
@@ -123,7 +188,7 @@ searchForm.addEventListener('submit', async (event) => {
     }
 });
 
-// Event delegation for "View Recipe" buttons
+// Event delegation for View Recipe buttons
 recipesContainer.addEventListener('click', async (event) => {
     const button = event.target.closest('.view-recipe-btn');
 
@@ -135,5 +200,18 @@ recipesContainer.addEventListener('click', async (event) => {
 
         const mealDetails = await fetchMealDetails(mealId);
         displayMealDetails(mealDetails);
+    }
+});
+
+
+// Event Listener Double-click on images
+document.body.addEventListener('dblclick', (event) => {
+    const imgElement = event.target.closest('.dbl-click-favorite');
+
+    if (imgElement) {
+        const mealName = imgElement.dataset.mealName;
+        if (mealName) {
+            toggleFavorite(mealName);
+        }
     }
 });
