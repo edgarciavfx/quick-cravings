@@ -10,8 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <link rel="stylesheet" href="assets/css/styles.css">
+  
+  <link rel="stylesheet" href="assets/css/style.css"> 
 
 </head>
 <body class="bg-light">
@@ -39,8 +39,8 @@
           <h2 class="h6 mb-3 fw-bold">Favorite Meals</h2>
           <hr>
           <div class="d-grid gap-2">
-            <button class="btn btn-outline-secondary btn-sm text-start">Kafteji</button>
-            <button class="btn btn-outline-secondary btn-sm text-start">Tonkatsu pork</button>
+            <button class="btn btn-secondary btn-sm text-start">Kafteji</button>
+            <button class="btn btn-secondary btn-sm text-start">Tonkatsu pork</button>
           </div>
         </section>
 
@@ -57,6 +57,26 @@
   <footer class="py-3 bg-white border-top text-center mt-5">
     <span class="small text-muted" id="dev">&#64;edgarciavfx</span>
   </footer>
+
+  <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Meal Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <p class="placeholder-glow">
+            Loading details...
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="assets/js/script.js"></script>

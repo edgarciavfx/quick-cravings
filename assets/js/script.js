@@ -1,11 +1,16 @@
 // DOM Elements
-const devUtil = document.querySelector('#dev');
 const searchForm = document.querySelector('#search-form');
 const searchInput = document.querySelector('#search-input');
 const recipesContainer = document.querySelector('#recipes-container');
 
+// Utilility function to display status message
+const displayStatusMessage = message => {
+    recipesContainer.innerHTML = `<p class="text-muted">${message}</p>`;
+}
+
 // Async function to fetch recipes based on an ingredient
 const fetchRecipes = async (ingredient) => {
+    displayStatusMessage('Loading recipes...');
     try {
         const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`);
         const data = await response.json();
@@ -16,17 +21,19 @@ const fetchRecipes = async (ingredient) => {
     }
 }
 
+// Function to display recipes in the DOM
 const displayRecipes = recipes => {
     recipesContainer.innerHTML = ''; // Clear previous results
     
     if (!recipes) {
-        recipesContainer.innerHTML = '<p class="text-muted">No recipes found. Try another ingredient!</p>';
+        displayStatusMessage('No recipes found. Please try a different ingredient.');
         return;
     }
 
     recipes.forEach(recipe => {
+        // Class 'recipe-card' is used for custom styling (hover, transition, etc.)
         const recipeCard = `
-            <div id="${recipe.idMeal}" class="card recipe-card h-100 border-0 shadow-sm">
+            <div class="card recipe-card h-100 border-0 shadow-sm">
               <img src="${recipe.strMealThumb}" class="card-img-top" alt="${recipe.strMeal}">
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title">${recipe.strMeal}</h5>
