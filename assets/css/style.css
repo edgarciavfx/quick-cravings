@@ -1,6 +1,17 @@
+/* Custom Styles for quick-cravings */
+
+/* Sticky Footer Setup */
 body {
+  display: flex;               /* Enable Flexbox */
+  flex-direction: column;      /* Stack children vertically */
+  min-height: 100vh;           /* Ensure body takes up full viewport height */
   font-family: 'Poppins', sans-serif;
 }
+
+main {
+    flex-grow: 1;              /* Allow main content to grow and push the footer down */
+}
+
 
 /* Recipes Container - CSS Grid Layout */
 #recipes-container {
@@ -13,27 +24,35 @@ body {
 }
 
 /* 2-Column Layout (Small screens and up) */
+/* This kicks in at the Bootstrap 'sm' breakpoint (576px) */
 @media (min-width: 576px) {
     #recipes-container {
+        /* Enforce 2 equal columns */
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 /* 4-Column Layout (Large screens and up) */
+/* This kicks in at the Bootstrap 'lg' breakpoint (992px) */
 @media (min-width: 992px) {
     #recipes-container {
+        /* Enforce a maximum of 4 equal columns */
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
 
+/* Recipe Card Styling */
 .recipe-card {
+  /* Set transition for smooth hover animation */
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   height: 100%; /* Ensures cards in the same row are equal height */
 }
 
 .recipe-card:hover {
+  /* Lift effect */
   transform: translateY(-5px);
+  /* Custom shadow */
   box-shadow: 0 10px 20px rgba(0,0,0,0.15);
   cursor: pointer;
 }

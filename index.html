@@ -13,10 +13,11 @@
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   
-  <!-- Custom Stylesheet -->
+  <!-- Custom Stylesheet (Contains sticky footer logic) -->
   <link rel="stylesheet" href="assets/css/style.css"> 
 
 </head>
+<!-- The body style for a sticky footer is now controlled in assets/css/style.css -->
 <body class="bg-light">
 
   <!-- Header -->
@@ -27,6 +28,7 @@
   </header>
 
   <!-- Main -->
+  <!-- The custom CSS targets this element to make it grow and push the footer down -->
   <main class="container py-4">
     <div class="row g-4">
 
@@ -46,9 +48,9 @@
         <section id="favorites-section" class="p-3 bg-white border rounded shadow-sm">
           <h2 class="h6 mb-3 fw-bold">Favorite Meals</h2>
           <hr>
+          <!-- This div is dynamically populated by JS -->
           <div class="d-grid gap-2">
-            <button class="btn btn-outline-secondary btn-sm text-start">Kafteji</button>
-            <button class="btn btn-outline-secondary btn-sm text-start">Tonkatsu pork</button>
+            <p class="text-muted small mb-0">No favorites yet. Double-click an image to save it!</p>
           </div>
         </section>
 
@@ -65,7 +67,8 @@
   </main>
 
   <!-- Footer -->
-  <footer class="py-3 bg-white border-top text-center mt-5">
+  <!-- Removed mt-5, as positioning is now handled by Flexbox in CSS -->
+  <footer class="py-3 bg-white border-top text-center">
     <span class="small text-muted" id="dev">&#64;edgarciavfx</span>
   </footer>
 
@@ -80,7 +83,6 @@
         </div>
 
         <div class="modal-body" id="meal-details-body">
-          <!-- MealDetails Component -->
           <p class="placeholder-glow">
             Loading details...
           </p>

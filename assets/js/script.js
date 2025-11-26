@@ -5,11 +5,11 @@ const searchInput = document.querySelector('#search-input');
 const recipesContainer = document.querySelector('#recipes-container');
 const detailsModalTitle = document.querySelector('#meal-details-title');
 const detailsModalBody = document.querySelector('#meal-details-body');
-const favoritesSection = document.querySelector('#favorites-section'); // New DOM element for the sidebar
+const favoritesSection = document.querySelector('#favorites-section');
 
 // --- Favorites Management ---
 
-// Load favorites from local storage
+// Load favorites from local storage (now stores objects: {id: string, name: string})
 const loadFavorites = () => {
     try {
         const favorites = JSON.parse(localStorage.getItem('favorite-meals')) || [];
@@ -26,30 +26,30 @@ const saveFavorites = (favorites) => {
     renderFavoritesSidebar(); // Update the sidebar whenever favorites change
 }
 
-// Toggle (add/remove) a meal from favorites
-const toggleFavorite = (mealName) => {
+// Toggle (add/remove) a meal from favorites using ID
+const toggleFavorite = (mealID, mealName) => {
     const favorites = loadFavorites();
-    const index = favorites.indexOf(mealName);
+    const index = favorites.findIndex(fav => fav.id === mealID);
 
     if (index === -1) {
-        // Add to favorites
-        favorites.push(mealName);
+        // Add to favorites: Store as object {id, name}
+        favorites.push({ id: mealID, name: mealName });
     } else {
         // Remove from favorites
         favorites.splice(index, 1);
     }
 
     saveFavorites(favorites);
-    console.log(`${mealName} toggled. Current favorites: ${favorites}`);
+    console.log(`Meal ID ${mealID} (${mealName}) toggled. Current favorites:`, favorites);
 }
 
 // Render the favorites buttons in the sidebar
 const renderFavoritesSidebar = () => {
     const favorites = loadFavorites();
+    // Assuming the list group container is the second child of favoritesSection (the d-grid)
     const listGroup = favoritesSection.querySelector('.d-grid.gap-2'); 
     
-    // Clear previous list (assuming we are rebuilding the list)
-    if (!listGroup) return; // safety check
+    if (!listGroup) return;
     listGroup.innerHTML = ''; 
 
     if (favorites.length === 0) {
@@ -57,9 +57,9 @@ const renderFavoritesSidebar = () => {
         return;
     }
 
-    favorites.forEach(mealName => {
-        // Use the meal name as the text for the button
-        const button = `<button class="btn btn-outline-secondary btn-sm text-start favorite-meal-btn" data-meal-name="${mealName}">${mealName}</button>`;
+    favorites.forEach(meal => {
+        // Use meal.name for display, but meal.id for the data attribute
+        const button = `<button class="btn btn-outline-secondary btn-sm text-start favorite-meal-btn" data-meal-id="${meal.id}">${meal.name}</button>`;
         listGroup.innerHTML += button;
     });
 }
@@ -108,11 +108,13 @@ const displayRecipes = recipes => {
     }
 
     recipes.forEach(recipe => {
-        // Add data-meal-name to the image for the dblclick event
+        // Now storing both meal name AND ID on the image for dblclick
         const recipeCard = `
             <div class="card recipe-card h-100 border-0 shadow-sm">
               <img src="${recipe.strMealThumb}" class="card-img-top dbl-click-favorite" 
-                   alt="${recipe.strMeal}" data-meal-name="${recipe.strMeal}">
+                   alt="${recipe.strMeal}" 
+                   data-meal-name="${recipe.strMeal}"
+                   data-meal-id="${recipe.idMeal}">
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title">${recipe.strMeal}</h5>
                 <button 
@@ -141,7 +143,6 @@ const displayMealDetails = (meal) => {
     
     detailsModalTitle.textContent = meal.strMeal;
 
-    // Extracting ingredients and measurements
     let ingredientsList = '';
     for (let i = 1; i <= 20; i++) {
         const ingredient = meal[`strIngredient${i}`];
@@ -151,12 +152,14 @@ const displayMealDetails = (meal) => {
         }
     }
 
-    // Add dbl-click-favorite class and data-meal-name to the modal image
+    // Add dbl-click-favorite class, meal name, and meal ID to the modal image
     const modalContent = `
         <div class="row">
             <div class="col-md-5 mb-3 mb-md-0">
                 <img src="${meal.strMealThumb}" class="img-fluid rounded shadow-sm mb-3 dbl-click-favorite" 
-                     alt="${meal.strMeal}" data-meal-name="${meal.strMeal}">
+                     alt="${meal.strMeal}" 
+                     data-meal-name="${meal.strMeal}"
+                     data-meal-id="${meal.idMeal}">
                 
                 <h4 class="mb-3">Ingredients</h4>
                 <ul class="list-group mb-4">${ingredientsList}</ul>
@@ -188,30 +191,51 @@ searchForm.addEventListener('submit', async (event) => {
     }
 });
 
-// Event delegation for View Recipe buttons
+// Event delegation for "View Recipe" buttons (in search results)
 recipesContainer.addEventListener('click', async (event) => {
     const button = event.target.closest('.view-recipe-btn');
-
     if (button) {
         const mealId = button.dataset.mealId;
-
-        detailsModalTitle.textContent = 'Loading Recipe...';
-        detailsModalBody.innerHTML = '<p class="text-center text-primary"><span class="spinner-border spinner-border-sm me-2" role="status"></span>Fetching details...</p>';
-
-        const mealDetails = await fetchMealDetails(mealId);
-        displayMealDetails(mealDetails);
+        // Call the general function to handle details fetching and display
+        await handleViewRecipe(mealId);
     }
 });
 
+// New Event Listener: Handle clicks on Favorite buttons (in sidebar)
+favoritesSection.addEventListener('click', async (event) => {
+    const button = event.target.closest('.favorite-meal-btn');
+    if (button) {
+        const mealId = button.dataset.mealId;
+        // Call the general function to handle details fetching and display
+        await handleViewRecipe(mealId);
 
-// Event Listener Double-click on images
+        // Additionally, manually trigger the modal display since the button doesn't have BS attributes
+        // This assumes the modal variable is available (it isn't globally defined, so we create it)
+        const detailsModal = new bootstrap.Modal(document.getElementById('detailsModal'));
+        detailsModal.show();
+    }
+});
+
+// New Event Listener: Double-click on images (delegated)
 document.body.addEventListener('dblclick', (event) => {
     const imgElement = event.target.closest('.dbl-click-favorite');
 
     if (imgElement) {
         const mealName = imgElement.dataset.mealName;
-        if (mealName) {
-            toggleFavorite(mealName);
+        const mealID = imgElement.dataset.mealId;
+        
+        if (mealName && mealID) {
+            toggleFavorite(mealID, mealName);
         }
     }
 });
+
+// Helper function to handle fetching and setting modal content
+const handleViewRecipe = async (mealId) => {
+    // Reset modal content while loading
+    detailsModalTitle.textContent = 'Loading Recipe...';
+    detailsModalBody.innerHTML = '<p class="text-center text-primary"><span class="spinner-border spinner-border-sm me-2" role="status"></span>Fetching details...</p>';
+
+    const mealDetails = await fetchMealDetails(mealId);
+    displayMealDetails(mealDetails);
+}
