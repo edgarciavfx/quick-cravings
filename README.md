@@ -50,12 +50,12 @@ quick-cravings/
 ├── assets/
 │   ├── css/
 │   │   └── styles.css
-│   └── js/
-│       └── script.js
+│   ├── js/
+│   │   └── script.js
+│   ├── screenshot.png
 ├── index.html
 ├── LICENSE
 ├── README.md
-└── screenshot.png
 ```
 
 ## 📄 Setup & Run
@@ -86,23 +86,24 @@ python3 -m http.server 5500
 http://localhost:5500
 ```
 
-⭐ Why I Built This
+## ⭐ Why I Built This
 
-QuickCravings was built as my Week 7 solo project for Codecademy’s Full Stack Bootcamp. I wanted a practical but meaningful way to strengthen my JavaScript fundamentals while working with real API data and user interactions.
+QuickCravings was created as my Week 7 solo project for Codecademy’s Full Stack Bootcamp. I wanted a practical yet meaningful way to strengthen my JavaScript fundamentals while working with real API data and user interactions.
 
 This project became the perfect space to practice:
 
-Fetching and handling external APIs (TheMealDB)
+- **Fetching and handling external APIs** (TheMealDB)
+- **Building an interactive UI** with search, dynamic cards, and custom modals
+- **Using Bootstrap utility classes effectively** without heavy custom CSS
+- **Designing a clean, readable layout** with a mobile-first approach
+- **Structuring code with clarity**, mimicking component-like logic even without frameworks
 
-Building an interactive UI with search, dynamic cards, and custom modals
+Beyond meeting the project’s core requirements, I used QuickCravings to push myself toward stretch-goal skills like loading states, friendly error messages, and client-side storage (favorites).  
+Overall, this project became a portfolio-ready example of my front-end workflow, problem-solving, and attention to UI/UX detail.
 
-Using Bootstrap utility classes effectively without relying on heavy custom CSS
+## 🖼️ Wireframe
 
-Designing a clean, readable layout that works on mobile first
-
-Structuring code with clarity, mimicking component-like logic even without frameworks
-
-Beyond meeting the project’s core requirements, I used QuickCravings to push myself toward stretch-goal skills like loading states, friendly error messages, and client-side storage (favorites). The final result is a portfolio-ready example of my front-end workflow, problem-solving, and attention to UI/UX detail.
+![Wireframe](assets/wireframe.png)
 
 ## 📘 What I Learned
 
