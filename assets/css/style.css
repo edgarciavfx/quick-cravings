@@ -1,64 +1,67 @@
-/* Custom Styles for quick-cravings */
-
-/* Sticky Footer Setup */
+/* 
+  Core Layout
+  - Enables sticky footer via flexbox
+*/
 body {
-  display: flex;               /* Enable Flexbox */
-  flex-direction: column;      /* Stack children vertically */
-  min-height: 100vh;           /* Ensure body takes up full viewport height */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   font-family: 'Poppins', sans-serif;
 }
 
+/* Main area grows to push footer down */
 main {
-    flex-grow: 1;              /* Allow main content to grow and push the footer down */
+  flex-grow: 1;
 }
 
 
-/* Recipes Container - CSS Grid Layout */
+/* 
+  Recipes Container Grid
+  - Responsive layout for recipe cards
+*/
 #recipes-container {
   display: grid;
   gap: 1.5rem;
   padding: 0;
-
-  /* Default (XS and SM screens): 1 column */
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* Mobile: single column */
 }
 
-/* 2-Column Layout (Small screens and up) */
-/* This kicks in at the Bootstrap 'sm' breakpoint (576px) */
+/* Small screens → 2 columns */
 @media (min-width: 576px) {
-    #recipes-container {
-        /* Enforce 2 equal columns */
-        grid-template-columns: repeat(2, 1fr);
-    }
+  #recipes-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* 4-Column Layout (Large screens and up) */
-/* This kicks in at the Bootstrap 'lg' breakpoint (992px) */
+/* Large screens → 4 columns */
 @media (min-width: 992px) {
-    #recipes-container {
-        /* Enforce a maximum of 4 equal columns */
-        grid-template-columns: repeat(4, 1fr);
-    }
+  #recipes-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 
-/* Recipe Card Styling */
+/* 
+  Recipe Card Styling
+  - Hover animation
+  - Equal card height
+*/
 .recipe-card {
-  /* Set transition for smooth hover animation */
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  height: 100%; /* Ensures cards in the same row are equal height */
+  height: 100%;
 }
 
 .recipe-card:hover {
-  /* Lift effect */
   transform: translateY(-5px);
-  /* Custom shadow */
   box-shadow: 0 10px 20px rgba(0,0,0,0.15);
   cursor: pointer;
 }
 
-/* Image styling */
+/* 
+  Recipe Image
+  - Enforces consistent height + cover crop
+*/
 .recipe-card img {
   object-fit: cover;
-  height: 200px; /* Consistent height for all card images */
+  height: 200px;
 }

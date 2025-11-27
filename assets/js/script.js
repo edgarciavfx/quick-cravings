@@ -15,7 +15,7 @@ const favoritesSection = document.querySelector('#favorites-section');
 //  FAVORITES MANAGEMENT
 // =======================================================
 
-// Load favorites from localStorage
+/** Load favorites from localStorage. */
 const loadFavorites = () => {
     try {
         return JSON.parse(localStorage.getItem('favorite-meals')) || [];
@@ -25,13 +25,13 @@ const loadFavorites = () => {
     }
 };
 
-// Save favorites + update sidebar
+/** Save favorites list and update sidebar. */
 const saveFavorites = (favorites) => {
     localStorage.setItem('favorite-meals', JSON.stringify(favorites));
     renderFavoritesSidebar();
 };
 
-// Add/remove favorite
+/** Add or remove a favorite meal. */
 const toggleFavorite = (mealID, mealName) => {
     const favorites = loadFavorites();
     const index = favorites.findIndex(fav => fav.id === mealID);
@@ -43,13 +43,11 @@ const toggleFavorite = (mealID, mealName) => {
     }
 
     saveFavorites(favorites);
-    console.log(`Toggled favorite: ${mealID} (${mealName})`, favorites);
 };
 
-// Render favorites sidebar list
+/** Render the favorites sidebar. */
 const renderFavoritesSidebar = () => {
     const favorites = loadFavorites();
-
     if (!favoritesSection) return;
 
     favoritesSection.innerHTML = '';
@@ -79,7 +77,7 @@ document.addEventListener('DOMContentLoaded', renderFavoritesSidebar);
 //  API FUNCTIONS
 // =======================================================
 
-// Fetch recipes list
+/** Fetch recipes by ingredient. */
 const fetchRecipes = async (ingredient) => {
     try {
         recipesContainer.innerHTML =
@@ -98,7 +96,7 @@ const fetchRecipes = async (ingredient) => {
     }
 };
 
-// Fetch details for 1 recipe
+/** Fetch full details for a single meal. */
 const fetchMealDetails = async (mealID) => {
     try {
         const response = await fetch(
@@ -118,7 +116,7 @@ const fetchMealDetails = async (mealID) => {
 //  DISPLAY FUNCTIONS
 // =======================================================
 
-// Render card grid
+/** Render recipe cards in the grid. */
 const displayRecipes = (recipes) => {
     recipesContainer.innerHTML = '';
 
@@ -131,6 +129,7 @@ const displayRecipes = (recipes) => {
     recipes.forEach(recipe => {
         recipesContainer.innerHTML += `
             <div class="card recipe-card h-100 border-0 shadow-sm">
+
                 <img 
                     src="${recipe.strMealThumb}"
                     class="card-img-top dbl-click-favorite"
@@ -151,11 +150,12 @@ const displayRecipes = (recipes) => {
                         View Recipe
                     </button>
                 </div>
+
             </div>`;
     });
 };
 
-// Render details modal content
+/** Render the recipe details modal. */
 const displayMealDetails = (meal) => {
     if (!meal) {
         detailsModalTitle.textContent = 'Error';
@@ -181,6 +181,7 @@ const displayMealDetails = (meal) => {
     detailsModalBody.innerHTML = `
         <div class="row">
             <div class="col-md-5 mb-3 mb-md-0">
+
                 <img 
                     src="${meal.strMealThumb}"
                     class="img-fluid rounded shadow-sm mb-3 dbl-click-favorite"
@@ -222,26 +223,24 @@ const displayMealDetails = (meal) => {
 //  EVENT LISTENERS
 // =======================================================
 
-// Handle search form
+/** Handle ingredient search form submission. */
 searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-
     const query = searchInput.value.trim();
+
     if (query) {
         const recipes = await fetchRecipes(query);
         displayRecipes(recipes);
     }
 });
 
-// Handle "View Recipe" clicks
+/** Handle clicking the "View Recipe" button. */
 recipesContainer.addEventListener('click', async (event) => {
     const btn = event.target.closest('.view-recipe-btn');
-    if (btn) {
-        await handleViewRecipe(btn.dataset.mealId);
-    }
+    if (btn) await handleViewRecipe(btn.dataset.mealId);
 });
 
-// Handle sidebar favorites click
+/** Handle clicking favorite items in the sidebar. */
 favoritesSection.addEventListener('click', async (event) => {
     const btn = event.target.closest('.favorite-meal-btn');
     if (!btn) return;
@@ -252,12 +251,10 @@ favoritesSection.addEventListener('click', async (event) => {
     modal.show();
 });
 
-// Handle double-click favorite toggle
+/** Handle double-clicking images to toggle favorites. */
 document.body.addEventListener('dblclick', (event) => {
     const img = event.target.closest('.dbl-click-favorite');
-    if (img) {
-        toggleFavorite(img.dataset.mealId, img.dataset.mealName);
-    }
+    if (img) toggleFavorite(img.dataset.mealId, img.dataset.mealName);
 });
 
 
@@ -265,6 +262,8 @@ document.body.addEventListener('dblclick', (event) => {
 // =======================================================
 //  HELPERS
 // =======================================================
+
+/** Fetch meal details and render modal. */
 const handleViewRecipe = async (mealId) => {
     detailsModalTitle.textContent = 'Loading Recipe...';
     detailsModalBody.innerHTML =
