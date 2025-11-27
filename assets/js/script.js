@@ -1,4 +1,6 @@
-// DOM Elements
+// =======================================================
+//  DOM ELEMENTS
+// =======================================================
 const devUtil = document.querySelector('#dev');
 const searchForm = document.querySelector('#search-form');
 const searchInput = document.querySelector('#search-input');
@@ -7,183 +9,223 @@ const detailsModalTitle = document.querySelector('#meal-details-title');
 const detailsModalBody = document.querySelector('#meal-details-body');
 const favoritesSection = document.querySelector('#favorites-section');
 
-// --- Favorites Management ---
 
-// Load favorites from local storage (now stores objects: {id: string, name: string})
+
+// =======================================================
+//  FAVORITES MANAGEMENT
+// =======================================================
+
+// Load favorites from localStorage
 const loadFavorites = () => {
     try {
-        const favorites = JSON.parse(localStorage.getItem('favorite-meals')) || [];
-        return favorites;
+        return JSON.parse(localStorage.getItem('favorite-meals')) || [];
     } catch (e) {
-        console.error("Could not parse favorites from localStorage", e);
+        console.error("Could not parse favorites", e);
         return [];
     }
-}
+};
 
-// Save favorites to local storage
+// Save favorites + update sidebar
 const saveFavorites = (favorites) => {
     localStorage.setItem('favorite-meals', JSON.stringify(favorites));
-    renderFavoritesSidebar(); // Update the sidebar whenever favorites change
-}
+    renderFavoritesSidebar();
+};
 
-// Toggle (add/remove) a meal from favorites using ID
+// Add/remove favorite
 const toggleFavorite = (mealID, mealName) => {
     const favorites = loadFavorites();
     const index = favorites.findIndex(fav => fav.id === mealID);
 
     if (index === -1) {
-        // Add to favorites: Store as object {id, name}
         favorites.push({ id: mealID, name: mealName });
     } else {
-        // Remove from favorites
         favorites.splice(index, 1);
     }
 
     saveFavorites(favorites);
-    console.log(`Meal ID ${mealID} (${mealName}) toggled. Current favorites:`, favorites);
-}
+    console.log(`Toggled favorite: ${mealID} (${mealName})`, favorites);
+};
 
-// Render the favorites buttons in the sidebar
+// Render favorites sidebar list
 const renderFavoritesSidebar = () => {
     const favorites = loadFavorites();
-    // Assuming the list group container is the second child of favoritesSection (the d-grid)
-    const listGroup = favoritesSection.querySelector('.d-grid.gap-2'); 
-    
-    if (!listGroup) return;
-    listGroup.innerHTML = ''; 
+
+    if (!favoritesSection) return;
+
+    favoritesSection.innerHTML = '';
 
     if (favorites.length === 0) {
-        listGroup.innerHTML = '<p class="text-muted small mb-0">No favorites yet. Double-click an image to save it!</p>';
+        favoritesSection.innerHTML =
+            '<p class="text-muted small mb-0">No favorites yet. Double-click an image to save it!</p>';
         return;
     }
 
     favorites.forEach(meal => {
-        // Use meal.name for display, but meal.id for the data attribute
-        const button = `<button class="btn btn-outline-secondary btn-sm text-start favorite-meal-btn" data-meal-id="${meal.id}">${meal.name}</button>`;
-        listGroup.innerHTML += button;
+        favoritesSection.innerHTML += `
+            <button 
+                class="btn btn-outline-secondary btn-sm text-start favorite-meal-btn"
+                data-meal-id="${meal.id}">
+                ${meal.name}
+            </button>`;
     });
-}
+};
 
-// Initialize sidebar on load
+// Initialize sidebar
 document.addEventListener('DOMContentLoaded', renderFavoritesSidebar);
 
-// --- API Functions ---
 
-// 1. Fetch list of recipes by ingredient
+
+// =======================================================
+//  API FUNCTIONS
+// =======================================================
+
+// Fetch recipes list
 const fetchRecipes = async (ingredient) => {
     try {
-        recipesContainer.innerHTML = '<p class="text-center text-muted">Searching for recipes...</p>';
-        
-        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`);
+        recipesContainer.innerHTML =
+            '<p class="text-center text-muted">Searching for recipes...</p>';
+
+        const response = await fetch(
+            `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`
+        );
         const data = await response.json();
         return data.meals;
     } catch (error) {
         console.error('Error fetching recipes:', error);
-        recipesContainer.innerHTML = '<p class="text-center text-danger">Failed to fetch recipes. Please try again.</p>';
+        recipesContainer.innerHTML =
+            '<p class="text-center text-danger">Failed to fetch recipes. Please try again.</p>';
         return [];
     }
-}
+};
 
-// 2. Fetch full details for a single meal ID
+// Fetch details for 1 recipe
 const fetchMealDetails = async (mealID) => {
     try {
-        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealID}`);
+        const response = await fetch(
+            `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealID}`
+        );
         const data = await response.json();
         return data.meals ? data.meals[0] : null;
     } catch (error) {
         console.error('Error fetching meal details:', error);
         return null;
     }
-}
+};
 
-// --- Display Functions ---
 
-// Display meal cards on the main page
-const displayRecipes = recipes => {
-    recipesContainer.innerHTML = ''; 
-    
+
+// =======================================================
+//  DISPLAY FUNCTIONS
+// =======================================================
+
+// Render card grid
+const displayRecipes = (recipes) => {
+    recipesContainer.innerHTML = '';
+
     if (!recipes || recipes.length === 0) {
-        recipesContainer.innerHTML = '<p class="text-center text-muted">No recipes found. Try another ingredient!</p>';
+        recipesContainer.innerHTML =
+            '<p class="text-center text-muted">No recipes found. Try another ingredient!</p>';
         return;
     }
 
     recipes.forEach(recipe => {
-        // Now storing both meal name AND ID on the image for dblclick
-        const recipeCard = `
+        recipesContainer.innerHTML += `
             <div class="card recipe-card h-100 border-0 shadow-sm">
-              <img src="${recipe.strMealThumb}" class="card-img-top dbl-click-favorite" 
-                   alt="${recipe.strMeal}" 
-                   data-meal-name="${recipe.strMeal}"
-                   data-meal-id="${recipe.idMeal}">
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">${recipe.strMeal}</h5>
-                <button 
-                  type="button" 
-                  class="btn btn-primary mt-auto view-recipe-btn"
-                  data-bs-toggle="modal" 
-                  data-bs-target="#detailsModal"
-                  data-meal-id="${recipe.idMeal}"
+                <img 
+                    src="${recipe.strMealThumb}"
+                    class="card-img-top dbl-click-favorite"
+                    alt="${recipe.strMeal}"
+                    data-meal-name="${recipe.strMeal}"
+                    data-meal-id="${recipe.idMeal}"
                 >
-                  View Recipe
-                </button>
-              </div>
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${recipe.strMeal}</h5>
+
+                    <button 
+                        class="btn btn-primary mt-auto view-recipe-btn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#detailsModal"
+                        data-meal-id="${recipe.idMeal}"
+                    >
+                        View Recipe
+                    </button>
+                </div>
             </div>`;
-        
-        recipesContainer.innerHTML += recipeCard;
     });
 };
 
-// Display meal details in the modal
+// Render details modal content
 const displayMealDetails = (meal) => {
     if (!meal) {
         detailsModalTitle.textContent = 'Error';
-        detailsModalBody.innerHTML = '<p class="text-danger">Could not load recipe details.</p>';
+        detailsModalBody.innerHTML =
+            '<p class="text-danger">Could not load recipe details.</p>';
         return;
     }
-    
+
     detailsModalTitle.textContent = meal.strMeal;
 
     let ingredientsList = '';
     for (let i = 1; i <= 20; i++) {
-        const ingredient = meal[`strIngredient${i}`];
+        const ing = meal[`strIngredient${i}`];
         const measure = meal[`strMeasure${i}`];
-        if (ingredient && ingredient.trim() !== "") {
-            ingredientsList += `<li class="list-group-item">${measure} - ${ingredient}</li>`;
+        if (ing && ing.trim() !== '') {
+            ingredientsList += `
+                <li class="list-group-item">
+                    ${measure} - ${ing}
+                </li>`;
         }
     }
 
-    // Add dbl-click-favorite class, meal name, and meal ID to the modal image
-    const modalContent = `
+    detailsModalBody.innerHTML = `
         <div class="row">
             <div class="col-md-5 mb-3 mb-md-0">
-                <img src="${meal.strMealThumb}" class="img-fluid rounded shadow-sm mb-3 dbl-click-favorite" 
-                     alt="${meal.strMeal}" 
-                     data-meal-name="${meal.strMeal}"
-                     data-meal-id="${meal.idMeal}">
-                
-                <h4 class="mb-3">Ingredients</h4>
+                <img 
+                    src="${meal.strMealThumb}"
+                    class="img-fluid rounded shadow-sm mb-3 dbl-click-favorite"
+                    alt="${meal.strMeal}"
+                    data-meal-name="${meal.strMeal}"
+                    data-meal-id="${meal.idMeal}"
+                >
+
+                <h4>Ingredients</h4>
                 <ul class="list-group mb-4">${ingredientsList}</ul>
 
-                ${meal.strYoutube ? `<a href="${meal.strYoutube}" target="_blank" class="btn btn-danger btn-sm">Watch Video Instructions (YouTube)</a>` : ''}
+                ${
+                    meal.strYoutube
+                        ? `<a href="${meal.strYoutube}" target="_blank" class="btn btn-danger btn-sm">
+                               Watch Video Instructions
+                           </a>`
+                        : ''
+                }
             </div>
+
             <div class="col-md-7">
-                <h4 class="mb-3">Instructions</h4>
+                <h4>Instructions</h4>
                 <p>${meal.strInstructions.replace(/\r\n/g, '<br>')}</p>
-                
-                <h6 class="mt-4">Category: <span class="badge bg-secondary">${meal.strCategory}</span></h6>
-                <h6 class="mt-2">Area: <span class="badge bg-info">${meal.strArea}</span></h6>
+
+                <h6 class="mt-4">Category: 
+                    <span class="badge bg-secondary">${meal.strCategory}</span>
+                </h6>
+
+                <h6 class="mt-2">Area: 
+                    <span class="badge bg-info">${meal.strArea}</span>
+                </h6>
             </div>
-        </div>
-    `;
+        </div>`;
+};
 
-    detailsModalBody.innerHTML = modalContent;
-}
 
-// --- Event Listeners ---
 
-// Event listener for form submission
+// =======================================================
+//  EVENT LISTENERS
+// =======================================================
+
+// Handle search form
 searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
+
     const query = searchInput.value.trim();
     if (query) {
         const recipes = await fetchRecipes(query);
@@ -191,51 +233,43 @@ searchForm.addEventListener('submit', async (event) => {
     }
 });
 
-// Event delegation for "View Recipe" buttons (in search results)
+// Handle "View Recipe" clicks
 recipesContainer.addEventListener('click', async (event) => {
-    const button = event.target.closest('.view-recipe-btn');
-    if (button) {
-        const mealId = button.dataset.mealId;
-        // Call the general function to handle details fetching and display
-        await handleViewRecipe(mealId);
+    const btn = event.target.closest('.view-recipe-btn');
+    if (btn) {
+        await handleViewRecipe(btn.dataset.mealId);
     }
 });
 
-// New Event Listener: Handle clicks on Favorite buttons (in sidebar)
+// Handle sidebar favorites click
 favoritesSection.addEventListener('click', async (event) => {
-    const button = event.target.closest('.favorite-meal-btn');
-    if (button) {
-        const mealId = button.dataset.mealId;
-        // Call the general function to handle details fetching and display
-        await handleViewRecipe(mealId);
+    const btn = event.target.closest('.favorite-meal-btn');
+    if (!btn) return;
 
-        // Additionally, manually trigger the modal display since the button doesn't have BS attributes
-        // This assumes the modal variable is available (it isn't globally defined, so we create it)
-        const detailsModal = new bootstrap.Modal(document.getElementById('detailsModal'));
-        detailsModal.show();
-    }
+    await handleViewRecipe(btn.dataset.mealId);
+
+    const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+    modal.show();
 });
 
-// New Event Listener: Double-click on images (delegated)
+// Handle double-click favorite toggle
 document.body.addEventListener('dblclick', (event) => {
-    const imgElement = event.target.closest('.dbl-click-favorite');
-
-    if (imgElement) {
-        const mealName = imgElement.dataset.mealName;
-        const mealID = imgElement.dataset.mealId;
-        
-        if (mealName && mealID) {
-            toggleFavorite(mealID, mealName);
-        }
+    const img = event.target.closest('.dbl-click-favorite');
+    if (img) {
+        toggleFavorite(img.dataset.mealId, img.dataset.mealName);
     }
 });
 
-// Helper function to handle fetching and setting modal content
+
+
+// =======================================================
+//  HELPERS
+// =======================================================
 const handleViewRecipe = async (mealId) => {
-    // Reset modal content while loading
     detailsModalTitle.textContent = 'Loading Recipe...';
-    detailsModalBody.innerHTML = '<p class="text-center text-primary"><span class="spinner-border spinner-border-sm me-2" role="status"></span>Fetching details...</p>';
+    detailsModalBody.innerHTML =
+        '<p class="text-center text-primary"><span class="spinner-border spinner-border-sm me-2"></span>Fetching details...</p>';
 
     const mealDetails = await fetchMealDetails(mealId);
     displayMealDetails(mealDetails);
-}
+};
