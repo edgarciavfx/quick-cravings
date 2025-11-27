@@ -43,6 +43,34 @@ A high‑level overview of the application's behavior and logic: (Architecture O
 8. A **favorites sidebar** displays saved meals.
 9. Loading and error states provide clear UI feedback.
 
+## ⭐ Why I Built This
+
+QuickCravings was created as my Week 7 solo project for Codecademy’s Full Stack Bootcamp. I wanted a practical yet meaningful way to strengthen my JavaScript fundamentals while working with real API data and user interactions.
+
+This project became the perfect space to practice:
+
+- **Fetching and handling external APIs** (TheMealDB)
+- **Building an interactive UI** with search, dynamic cards, and custom modals
+- **Using Bootstrap utility classes effectively** without heavy custom CSS
+- **Designing a clean, readable layout** with a mobile-first approach
+- **Structuring code with clarity**, mimicking component-like logic even without frameworks
+
+Beyond meeting the project’s core requirements, I used QuickCravings to push myself toward stretch-goal skills like loading states, friendly error messages, and client-side storage (favorites).  
+Overall, this project became a portfolio-ready example of my front-end workflow, problem-solving, and attention to UI/UX detail.
+
+## 🖼️ Wireframe
+
+![Wireframe](assets/wireframe.png)
+
+## 📘 What I Learned
+
+* Writing clean, modular JavaScript
+* Fetching & rendering API data
+* Handling dynamic modals
+* Managing persistent state with `localStorage`
+* Designing responsive, mobile‑first layouts
+* Implementing loading & error feedback
+
 ## 📁 Project Structure
 
 ```
@@ -85,34 +113,6 @@ python3 -m http.server 5500
 ```
 http://localhost:5500
 ```
-
-## ⭐ Why I Built This
-
-QuickCravings was created as my Week 7 solo project for Codecademy’s Full Stack Bootcamp. I wanted a practical yet meaningful way to strengthen my JavaScript fundamentals while working with real API data and user interactions.
-
-This project became the perfect space to practice:
-
-- **Fetching and handling external APIs** (TheMealDB)
-- **Building an interactive UI** with search, dynamic cards, and custom modals
-- **Using Bootstrap utility classes effectively** without heavy custom CSS
-- **Designing a clean, readable layout** with a mobile-first approach
-- **Structuring code with clarity**, mimicking component-like logic even without frameworks
-
-Beyond meeting the project’s core requirements, I used QuickCravings to push myself toward stretch-goal skills like loading states, friendly error messages, and client-side storage (favorites).  
-Overall, this project became a portfolio-ready example of my front-end workflow, problem-solving, and attention to UI/UX detail.
-
-## 🖼️ Wireframe
-
-![Wireframe](assets/wireframe.png)
-
-## 📘 What I Learned
-
-* Writing clean, modular JavaScript
-* Fetching & rendering API data
-* Handling dynamic modals
-* Managing persistent state with `localStorage`
-* Designing responsive, mobile‑first layouts
-* Implementing loading & error feedback
 
 ## 📄 License
 
