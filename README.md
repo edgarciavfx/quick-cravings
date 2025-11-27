@@ -25,7 +25,8 @@ Features
 
 ## 📸 Screenshot
 
-![QuickCravings Screenshot](screenshot.png)
+![App Screenshot](assets/screenshot.png)
+
 ---
 
 ## 🧩 How It Works
